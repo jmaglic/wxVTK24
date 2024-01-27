@@ -1,6 +1,15 @@
+
+// Custom library
+#include "wxVTKRenderWindowInteractor.h"
+
+// Data
+#include "mondrian.xpm"
+
+// wxWidgets
 #include <wx/wx.h>
 #include <wx/version.h>
-#include "wxVTKRenderWindowInteractor.h"
+
+// VTK
 #include <vtkCamera.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -10,7 +19,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkAxesActor.h>
 #include <vtkOrientationMarkerWidget.h>
-#include "mondrian.xpm"
 #include <vtkSmartPointer.h>
 #include <vtkActor.h>
 #include <vtkRenderWindow.h>
@@ -22,13 +30,13 @@
 #include <vtkSampleFunction.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkImageData.h>
-#include <stdlib.h>
-#include <numeric>      // std::iota
 
+// Standard library
+#include <stdlib.h>
+#include <numeric> // std::iota
 
 class MyApp;
 class MyFrame;
-
 
 class MyApp : public wxApp
 {

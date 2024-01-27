@@ -13,20 +13,20 @@ class wxTimerEvent;
 class wxKeyEvent;
 class wxSizeEvent;
 
-class wxVTKRenderWindowInteractor : public wxWindow, public vtkRenderWindowInteractor
-{
-    DECLARE_DYNAMIC_CLASS(wxVTKRenderWindowInteractor)
-public:
+class wxVTKRenderWindowInteractor : public wxWindow, public vtkRenderWindowInteractor{
+  DECLARE_DYNAMIC_CLASS(wxVTKRenderWindowInteractor)
+  public:
     wxVTKRenderWindowInteractor();
 
-    wxVTKRenderWindowInteractor(wxWindow *parent,
-                                wxWindowID id,
-                                const wxPoint &pos = wxDefaultPosition,
-                                const wxSize &size = wxDefaultSize,
-                                long style = wxWANTS_CHARS | wxNO_FULL_REPAINT_ON_RESIZE,
-                                const wxString &name = wxPanelNameStr);
+    wxVTKRenderWindowInteractor(
+        wxWindow* parent,
+        wxWindowID id,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxWANTS_CHARS | wxNO_FULL_REPAINT_ON_RESIZE,
+        const wxString& name = wxPanelNameStr);
 
-    static wxVTKRenderWindowInteractor * New();
+    static wxVTKRenderWindowInteractor* New();
     void PrintSelf(ostream& os, vtkIndent indent);
     ~wxVTKRenderWindowInteractor();
 
@@ -65,8 +65,7 @@ public:
     vtkSetMacro(UseCaptureMouse,int);
     vtkBooleanMacro(UseCaptureMouse,int);
 
-
-protected:
+  protected:
     wxTimer timer;
     int ActiveButton;
     long GetHandleHack();
@@ -74,7 +73,7 @@ protected:
     virtual int InternalCreateTimer(int timerId, int timerType, unsigned long duration);
     virtual int InternalDestroyTimer(int platformTimerId);
 
-private:
+  private:
     long Handle;
     bool Created;
     int RenderWhenDisabled;
@@ -82,5 +81,4 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
-
 

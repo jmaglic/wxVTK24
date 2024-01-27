@@ -1,7 +1,8 @@
-#include <assert.h>
 #include "wxVTKRenderWindowInteractor.h"
 #include <vtkCommand.h>
 #include <vtkDebugLeaks.h>
+#include <assert.h>
+
 #define WX_USE_X_CAPTURE 1
 #define ID_wxVTKRenderWindowInteractor_TIMER 1001
 
@@ -192,7 +193,7 @@ void wxVTKRenderWindowInteractor::OnPaint(wxPaintEvent& WXUNUSED(event))
     {
         Handle = GetHandleHack();
         RenderWindow->SetWindowId(reinterpret_cast<void *>(Handle));
-        RenderWindow->SetParentId(reinterpret_cast<void *>(this->GetParent()->GetHWND()));
+        RenderWindow->SetParentId(reinterpret_cast<void *>(this->GetParent()->GetHandle()));
         this->RenderWindow->SetDisplayId(this->RenderWindow->GetGenericDisplayId());
     }
     Render();
