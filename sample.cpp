@@ -66,9 +66,9 @@ public:
   vtkSmartPointer<vtkRenderWindow> renderWindow;
 
   //Assigning Values , Allocating Memory
-  int X1 = 5;
-  int X2 = 5;
-  int X3 = 5;
+  int X1 = 6;
+  int X2 = 6;
+  int X3 = 6;
   int X1X2X3 = X1 * X2 * X3;
   std::vector<int> I;
 
@@ -151,7 +151,7 @@ MyFrame::~MyFrame()
 void MyFrame::ConstructVTK()
 {
   imageData = vtkSmartPointer<vtkImageData>::New();
-  imageData->SetDimensions(X1 + 1, X2 + 1, X3 + 1);
+  imageData->SetDimensions(X1, X2, X3);
   imageData->AllocateScalars(VTK_INT, 1);
   volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
   compositeOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -203,24 +203,16 @@ void MyFrame::ConfigureVTK()
   std::iota(&I[0], &I[0] + X1X2X3, 1); //Creating dummy data as 1,2,3...X1X2X3
 
   //Setting Voxel Data and Its Properties
-  for (int k = 0; k < X3 + 1; k++) {
-    for (int j = 0; j < X2 + 1; j++) {
-      for (int i = 0; i < X1 + 1; i++) {
+  for (int k = 0; k < X3; k++) {
+    for (int j = 0; j < X2; j++) {
+      for (int i = 0; i < X1; i++) {
 
-        
+        // Here we access the individual voxels inside image data and set their value 
         int* voxel = static_cast<int*>(imageData->GetScalarPointer(i, j, k));
 
-        if (i == X1 || j == X2 || k == X3)
-        {
-          //Assigning zeros to dummy voxels, these will not be displayed anyways
-          voxel[0] = 0;
-        }
+        //copying data from I to imagedata voxel
+        *voxel = I[i + X1 * j + X1 * X2 * k];
 
-        else
-        {
-          //copying data from I to imagedata voxel
-          voxel[0] = I[i + X1 * j + X1 * X2 * k];
-        }
       }
     }
   }
