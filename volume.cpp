@@ -19,7 +19,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
-#include <vtkRenderWindowInteractor.h>
 #include <vtkSmartVolumeMapper.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkVolumeProperty.h>
@@ -57,7 +56,6 @@ public:
   vtkSmartPointer<vtkVolume> volume;
   vtkSmartPointer<vtkSmartVolumeMapper> mapper;
   vtkSmartPointer<vtkRenderer> renderer;
-  //vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
   vtkSmartPointer<vtkRenderWindow> renderWindow;
 
   //Assigning Values , Allocating Memory

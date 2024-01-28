@@ -8,7 +8,6 @@
 
 // VTK
 #include <vtkActor.h>
-#include <vtkDICOMImageReader.h>
 #include <vtkImageData.h>
 #include <vtkNamedColors.h>
 #include <vtkSmartPointer.h>
@@ -51,7 +50,6 @@ public:
   vtkSmartPointer<vtkMarchingCubes> surface;
   vtkSmartPointer<vtkRenderer> renderer;
   vtkSmartPointer<vtkRenderWindow> renderWindow;
-  vtkSmartPointer<vtkRenderWindowInteractor> interactor;
   vtkSmartPointer<vtkPolyDataMapper> mapper;
   vtkSmartPointer<vtkActor> actor;
 
@@ -134,7 +132,6 @@ void MyFrame::ConstructVTK()
   voxelModeller = vtkSmartPointer<vtkVoxelModeller>::New();
   surface = vtkSmartPointer<vtkMarchingCubes>::New();
   renderer = vtkSmartPointer<vtkRenderer>::New();
-  interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
   mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   actor = vtkSmartPointer<vtkActor>::New();
 
@@ -146,13 +143,10 @@ void MyFrame::ConfigureVTK()
 
   // Here we get the renderer window from wxVTK
   renderWindow = m_pVTKWindow->GetRenderWindow();
-  renderWindow->SetWindowName("MarchingCubes");
   renderWindow->AddRenderer(renderer);
 
   renderer->SetBackground(colors->GetColor3d("DarkSlateGray").GetData());
   renderer->AddActor(actor);
-
-  interactor->SetRenderWindow(renderWindow);
 
   actor->GetProperty()->SetColor(colors->GetColor3d("MistyRose").GetData());
   actor->SetMapper(mapper);
@@ -187,9 +181,6 @@ void MyFrame::ConfigureVTK()
   // The mapper requires our vtkMarchingCubes object
   mapper->SetInputConnection(surface->GetOutputPort());
   mapper->ScalarVisibilityOff();
-
-  renderWindow->Render();
-  interactor->Start();
 
 }
 
