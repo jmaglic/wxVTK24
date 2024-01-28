@@ -142,6 +142,22 @@ void MyFrame::ConstructVTK()
 
 void MyFrame::ConfigureVTK()
 {
+  double isoValue = 0.5;
+
+  // Here we get the renderer window from wxVTK
+  renderWindow = m_pVTKWindow->GetRenderWindow();
+  renderWindow->SetWindowName("MarchingCubes");
+  renderWindow->AddRenderer(renderer);
+
+  renderer->SetBackground(colors->GetColor3d("DarkSlateGray").GetData());
+  renderer->AddActor(actor);
+
+  interactor->SetRenderWindow(renderWindow);
+
+  actor->GetProperty()->SetColor(colors->GetColor3d("MistyRose").GetData());
+  actor->SetMapper(mapper);
+
+  // Define surface
   sphereSource->SetPhiResolution(20);
   sphereSource->SetThetaResolution(20);
   sphereSource->Update();
@@ -155,35 +171,22 @@ void MyFrame::ConfigureVTK()
     bounds[i + 1] = bounds[i + 1] + 0.1 * range;
   }
 
+  voxelModeller->SetInputConnection(sphereSource->GetOutputPort());
   voxelModeller->SetSampleDimensions(50, 50, 50);
   voxelModeller->SetModelBounds(bounds);
   voxelModeller->SetScalarTypeToFloat();
   voxelModeller->SetMaximumDistance(0.1);
-
-  voxelModeller->SetInputConnection(sphereSource->GetOutputPort());
   voxelModeller->Update();
-  double isoValue = 0.5;
-  volume->DeepCopy(voxelModeller->GetOutput());
 
   surface->SetInputData(volume);
   surface->ComputeNormalsOn();
   surface->SetValue(0, isoValue);
 
-  renderer->SetBackground(colors->GetColor3d("DarkSlateGray").GetData());
+  volume->DeepCopy(voxelModeller->GetOutput());
 
-  renderWindow = m_pVTKWindow->GetRenderWindow();
-  renderWindow->AddRenderer(renderer);
-  renderWindow->SetWindowName("MarchingCubes");
-
-  interactor->SetRenderWindow(renderWindow);
-
+  // The mapper requires our vtkMarchingCubes object
   mapper->SetInputConnection(surface->GetOutputPort());
   mapper->ScalarVisibilityOff();
-
-  actor->SetMapper(mapper);
-  actor->GetProperty()->SetColor(colors->GetColor3d("MistyRose").GetData());
-
-  renderer->AddActor(actor);
 
   renderWindow->Render();
   interactor->Start();
