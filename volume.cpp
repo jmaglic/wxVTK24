@@ -74,8 +74,6 @@ protected:
 
 private:
   wxVTKRenderWindowInteractor *m_pVTKWindow;
-  vtkSmartPointer<vtkRenderer> pRenderer;
-  vtkSmartPointer<vtkRenderWindow> pRenderWindow;
 private:
   DECLARE_EVENT_TABLE()
 };
@@ -218,10 +216,7 @@ void MyFrame::ConfigureVTK()
  }
 
 void MyFrame::DestroyVTK()
-{
-  if (pRenderer != 0)
-    pRenderer->Delete();
-}
+{}
 
 
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
