@@ -13,14 +13,10 @@
 #include <vtkCamera.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkConeSource.h>
 #include <vtkPolyDataMapper.h>
-#include <vtkActor.h>
 #include <vtkSmartPointer.h>
-#include <vtkAxesActor.h>
 #include <vtkOrientationMarkerWidget.h>
 #include <vtkSmartPointer.h>
-#include <vtkActor.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
@@ -60,7 +56,6 @@ public:
   vtkSmartPointer<vtkColorTransferFunction> color;
   vtkSmartPointer<vtkVolume> volume;
   vtkSmartPointer<vtkSmartVolumeMapper> mapper;
-  vtkSmartPointer<vtkActor> actor;
   vtkSmartPointer<vtkRenderer> renderer;
   //vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
   vtkSmartPointer<vtkRenderWindow> renderWindow;
@@ -81,9 +76,6 @@ private:
   wxVTKRenderWindowInteractor *m_pVTKWindow;
   vtkSmartPointer<vtkRenderer> pRenderer;
   vtkSmartPointer<vtkRenderWindow> pRenderWindow;
-  vtkSmartPointer<vtkPolyDataMapper> pConeMapper;
-  vtkSmartPointer<vtkActor> pConeActor;
-  vtkSmartPointer<vtkConeSource> pConeSource;
 private:
   DECLARE_EVENT_TABLE()
 };
@@ -158,7 +150,6 @@ void MyFrame::ConstructVTK()
   color = vtkSmartPointer<vtkColorTransferFunction>::New();
   volume = vtkSmartPointer<vtkVolume>::New();
   mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
-  actor = vtkSmartPointer<vtkActor>::New();
   renderer = vtkSmartPointer<vtkRenderer>::New();
 
 
@@ -230,12 +221,6 @@ void MyFrame::DestroyVTK()
 {
   if (pRenderer != 0)
     pRenderer->Delete();
-  if (pConeMapper != 0)
-    pConeMapper->Delete();
-  if (pConeActor != 0)
-    pConeActor->Delete();
-  if (pConeSource != 0)
-    pConeSource->Delete();
 }
 
 
