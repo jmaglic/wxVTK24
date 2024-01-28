@@ -39,11 +39,22 @@ vtk_module_autoinit(
   MODULES ${VTK_LIBRARIES}
 )
 
-set(EXE_NAME cubedemo)
-add_executable(${EXE_NAME} sample.cpp)
-target_link_libraries(${EXE_NAME} wxVTKRenderWindowInteractor)
+# Executable for demonstrating voxel rendering
+set(VOLUME_DEMO cubedemo)
+add_executable(${VOLUME_DEMO} volume.cpp)
+target_link_libraries(${VOLUME_DEMO} wxVTKRenderWindowInteractor)
 
 vtk_module_autoinit(
-  TARGETS ${EXE_NAME}
+  TARGETS ${VOLUME_DEMO}
+  MODULES ${VTK_LIBRARIES}
+)
+
+# Executable for demonstrating marching cubes algorithm
+set(SURFACE_DEMO surfdemo)
+add_executable(${SURFACE_DEMO} surface.cpp)
+target_link_libraries(${SURFACE_DEMO} wxVTKRenderWindowInteractor)
+
+vtk_module_autoinit(
+  TARGETS ${SURFACE_DEMO}
   MODULES ${VTK_LIBRARIES}
 )
