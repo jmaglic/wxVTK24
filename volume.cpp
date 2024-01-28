@@ -95,7 +95,7 @@ IMPLEMENT_APP(MyApp)
 // 'Main program' equivalent: the program execution "starts" here
 bool MyApp::OnInit()
 {
-  MyFrame *frame = new MyFrame(_T("wxWidgets-VTK App"), wxPoint(50, 50), wxSize(450, 450));
+  MyFrame *frame = new MyFrame(_T("wxVTK Voxel Cube Demo"), wxPoint(50, 50), wxSize(450, 450));
   frame->Show(TRUE);
   return TRUE;
 }
