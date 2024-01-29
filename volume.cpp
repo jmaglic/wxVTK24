@@ -180,7 +180,6 @@ void MyFrame::ConfigureVTK()
   mapper->SetInputData(imageData);
   
   // Setting up image data
-  imageData->AllocateScalars(VTK_INT, 1); 
   imageData->UpdateCellGhostArrayCache();
   
   //I is supposed to store the 3D data which has to be shown as volume visualization. This 3D data is stored 

@@ -45,6 +45,7 @@ public:
   //Declaring Variables
   vtkSmartPointer<vtkNamedColors> colors;
   vtkSmartPointer<vtkImageData> volume;
+  vtkSmartPointer<vtkImageData> cylinder;
   vtkSmartPointer<vtkSphereSource> sphereSource;
   vtkSmartPointer<vtkVoxelModeller> voxelModeller;
   vtkSmartPointer<vtkMarchingCubes> surface;
@@ -128,6 +129,7 @@ void MyFrame::ConstructVTK()
 {
   colors = vtkSmartPointer<vtkNamedColors>::New(); 
   volume = vtkSmartPointer<vtkImageData>::New();
+  cylinder = vtkSmartPointer<vtkImageData>::New();
   sphereSource = vtkSmartPointer<vtkSphereSource>::New();
   voxelModeller = vtkSmartPointer<vtkVoxelModeller>::New();
   surface = vtkSmartPointer<vtkMarchingCubes>::New();
@@ -172,7 +174,25 @@ void MyFrame::ConfigureVTK()
   voxelModeller->SetMaximumDistance(0.1);
   voxelModeller->Update();
 
-  surface->SetInputData(volume);
+  // Alternative image data
+  int lim = 200;
+  cylinder->SetDimensions(lim,lim,lim);
+  cylinder->AllocateScalars(VTK_INT,1);
+  cylinder->UpdateCellGhostArrayCache();
+  for (size_t i = 0; i < lim; ++i) {
+    for (size_t j = 0; j < lim; ++j) {
+      // Constructing a cylinder
+      bool writeLine = (i-100)*(i-100) + (j-100)*(j-100) < 50*50;
+      for (size_t k = 0; k < lim; ++k) {
+        bool cap = k > 2 && k < lim-2;
+
+        int* voxel = static_cast<int*>(cylinder->GetScalarPointer(i, j, k));
+        *voxel = writeLine && cap? 1 : 0;
+      }
+    }
+  }
+
+  surface->SetInputData(cylinder); // change cylinder to volume to display sphere
   surface->ComputeNormalsOn();
   surface->SetValue(0, isoValue);
 
