@@ -247,7 +247,9 @@ void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event)
   {
     return;
   }
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(
+      event.GetX()-PrevX + this->Size[0]/2, event.GetY()-PrevY + this->Size[1]/2, 
+      event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   InvokeEvent(vtkCommand::MouseMoveEvent, NULL);
 
 }
@@ -343,8 +345,10 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   ActiveButton = event.GetEventType();
   this->SetFocus();
 
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-
+  SetEventInformationCentralize(
+      this->Size[0]/2, this->Size[1]/2, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  PrevX = event.GetX();
+  PrevY = event.GetY();
 
   if(event.RightDown())
   {
@@ -374,9 +378,11 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
 
   this->SetFocus();
 
-
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-
+  SetEventInformationCentralize(
+      this->Size[0]/2, this->Size[1]/2, 
+      event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  PrevX = 0;
+  PrevY = 0;
 
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
