@@ -95,6 +95,20 @@ class wxVTKRenderWindowInteractor : public wxWindow, public vtkRenderWindowInter
   virtual int InternalDestroyTimer(int platformTimerId);
 
   private:
+  inline void SetEventInformationCentralize(
+      int x, 
+      int y, 
+      int ctrl = 0, 
+      int shift = 0, 
+      char keycode = 0, 
+      int repeatcount = 0,
+      const char* keysym = 0) {
+    SetEventInformation(x + this->Size[0]/2, 3*this->Size[1]/2 - y,ctrl,shift,keycode,repeatcount,keysym);
+  }
+
+  int PrevX;
+  int PrevY;
+
   long Handle;
   bool Created;
   int RenderWhenDisabled;
