@@ -178,7 +178,6 @@ void MyFrame::ConfigureVTK()
   int lim = 200;
   cylinder->SetDimensions(lim,lim,lim);
   cylinder->AllocateScalars(VTK_INT,1);
-  cylinder->UpdateCellGhostArrayCache();
   for (size_t i = 0; i < lim; ++i) {
     for (size_t j = 0; j < lim; ++j) {
       // Constructing a cylinder

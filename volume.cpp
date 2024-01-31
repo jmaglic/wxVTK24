@@ -180,8 +180,6 @@ void MyFrame::ConfigureVTK()
   mapper->SetInputData(imageData);
   
   // Setting up image data
-  imageData->UpdateCellGhostArrayCache();
-  
   //I is supposed to store the 3D data which has to be shown as volume visualization. This 3D data is stored 
   //as a 1D array in which the order of iteration over 3 dimensions is x->y->z, this leads to the following 
   //3D to 1D index conversion farmula index1D =  i + X1*j + X1*X2*k   
