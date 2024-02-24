@@ -2,9 +2,6 @@
 // Custom library
 #include "wxVTKRenderWindowInteractor.h"
 
-// Data
-#include "mondrian.xpm"
-
 // wxWidgets
 #include <wx/wx.h>
 #include <wx/version.h>
@@ -104,7 +101,6 @@ bool MyApp::OnInit()
 MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size) : wxFrame((wxFrame *)NULL, -1, title, pos, size)
 {
 
-  SetIcon(wxICON(mondrian));
   wxMenu *menuFile = new wxMenu(_T(""), wxMENU_TEAROFF);
   wxMenu *helpMenu = new wxMenu;
   helpMenu->Append(Minimal_About, _T("&About...\tCtrl-A"), _T("Show about dialog"));

@@ -444,7 +444,6 @@ void wxVTKRenderWindowInteractor::Render()
   }
 }
 
-
 void wxVTKRenderWindowInteractor::SetRenderWhenDisabled(int newValue)
 {
   RenderWhenDisabled = (bool)newValue;
