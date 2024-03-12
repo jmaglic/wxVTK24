@@ -200,7 +200,7 @@ long wxVTKRenderWindowInteractor::GetHandleHack()
 {
 
   long handle_tmp = 0;
-  handle_tmp = (long)this->GetHandle();
+  handle_tmp = (long long)this->GetHandle();
   return handle_tmp;
 }
 
@@ -245,7 +245,7 @@ void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event)
 {
   if (!Enabled) {return;}
 
-  SetEventInformationFromOrigin(event.GetX()-PrevX, event.GetY()-PrevY,
+  SetEventInformationCentralize(event.GetX()-PrevX, event.GetY()-PrevY,
       event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   InvokeEvent(vtkCommand::MouseMoveEvent, NULL);
 
@@ -286,7 +286,7 @@ void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event)
     key = (char)keycode;
   }
   wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(mousePos.x, mousePos.y, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::KeyPressEvent, NULL);
   event.Skip();
 }
@@ -306,7 +306,7 @@ void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
   }
 
   wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(mousePos.x, mousePos.y, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::KeyReleaseEvent, NULL);
   event.Skip();
 }
@@ -328,7 +328,7 @@ void wxVTKRenderWindowInteractor::OnChar(wxKeyEvent &event)
   }
 
   wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(mousePos.x, mousePos.y, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::CharEvent, NULL);
   event.Skip();
 }
@@ -342,7 +342,7 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   ActiveButton = event.GetEventType();
   this->SetFocus();
 
-  SetEventInformationFromOrigin(0,0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   PrevX = event.GetX();
   PrevY = event.GetY();
 
@@ -374,10 +374,10 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
 
   this->SetFocus();
 
-  SetEventInformationFromOrigin(0,0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   PrevX = 0;
   PrevY = 0;
-
+  
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
     InvokeEvent(vtkCommand::RightButtonReleaseEvent, NULL);
@@ -403,7 +403,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
 void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event)
 {
 
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   if(event.GetWheelRotation() > 0)
   {
     InvokeEvent(vtkCommand::MouseWheelForwardEvent, NULL);
