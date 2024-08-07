@@ -103,10 +103,11 @@ class wxVTKRenderWindowInteractor : public wxWindow, public vtkRenderWindowInter
       char keycode = 0, 
       int repeatcount = 0,
       const char* keysym = 0) {
-    SetEventInformation(x + this->Size[0]/2, 3*this->Size[1]/2 - y,ctrl,shift,keycode,repeatcount,keysym);
+    SetEventInformation(x + (this->Size[0]/2), (this->Size[1]/2) - y,ctrl,shift,keycode,repeatcount,keysym);
   }
 
   // Set information, so that (0,0) represents no rotation
+/*
   inline void SetEventInformationFromOrigin(
       int x, 
       int y, 
@@ -115,8 +116,9 @@ class wxVTKRenderWindowInteractor : public wxWindow, public vtkRenderWindowInter
       char keycode = 0, 
       int repeatcount = 0,
       const char* keysym = 0) {
-    SetEventInformation(x + this->Size[0], this->Size[1] - y,ctrl,shift,keycode,repeatcount,keysym);
+    SetEventInformation(x + (this->Size[0]/2), (this->Size[1]/2) - y,ctrl,shift,keycode,repeatcount,keysym);
   }
+*/
 
   int PrevX;
   int PrevY;

@@ -38,7 +38,7 @@ find_package(VTK
 
 find_package(wxWidgets)
 include(${wxWidgets_USE_FILE})
-add_library(wxVTKRenderWindowInteractor SHARED wxVTKRenderWindowInteractor.cxx wxVTKRenderWindowInteractor.h)
+add_library(wxVTKRenderWindowInteractor STATIC wxVTKRenderWindowInteractor.cxx wxVTKRenderWindowInteractor.h)
 target_link_libraries(wxVTKRenderWindowInteractor ${VTK_LIBRARIES} ${wxWidgets_LIBRARIES})
 
 vtk_module_autoinit(

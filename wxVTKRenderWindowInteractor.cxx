@@ -22,6 +22,7 @@
 #include "wxVTKRenderWindowInteractor.h"
 #include <vtkCommand.h>
 #include <vtkDebugLeaks.h>
+#include <vtkInteractorStyleTrackballCamera.h>
 #include <assert.h>
 
 #define WX_USE_X_CAPTURE 1
@@ -53,6 +54,7 @@ END_EVENT_TABLE()
 
 wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor() : wxWindow(), vtkRenderWindowInteractor()
 {
+  this->SetInteractorStyle(vtkInteractorStyleTrackballCamera::New());
   this->RenderWindow = NULL;
   this->SetRenderWindow(vtkRenderWindow::New());
   this->RenderWindow->Delete();
@@ -76,29 +78,23 @@ wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor(wxWindow *parent,
 #ifdef VTK_DEBUG_LEAKS
   vtkDebugLeaks::ConstructClass("wxVTKRenderWindowInteractor");
 #endif
+  this->SetInteractorStyle(vtkInteractorStyleTrackballCamera::New());
   this->RenderWindow = NULL;
   this->SetRenderWindow(vtkRenderWindow::New());
   this->RenderWindow->Delete();
 
 }
 
-
-wxVTKRenderWindowInteractor::~wxVTKRenderWindowInteractor()
-{
+wxVTKRenderWindowInteractor::~wxVTKRenderWindowInteractor() {
   SetRenderWindow(NULL);
   SetInteractorStyle(NULL);
 }
 
-
-wxVTKRenderWindowInteractor * wxVTKRenderWindowInteractor::New()
-{
-
+wxVTKRenderWindowInteractor* wxVTKRenderWindowInteractor::New() {
   return new wxVTKRenderWindowInteractor;
 }
 
-
-void wxVTKRenderWindowInteractor::Initialize()
-{
+void wxVTKRenderWindowInteractor::Initialize() {
   int *size = RenderWindow->GetSize();
   Enable();
   Size[0] = size[0];
@@ -107,9 +103,7 @@ void wxVTKRenderWindowInteractor::Initialize()
 }
 
 
-void wxVTKRenderWindowInteractor::Enable()
-{
-
+void wxVTKRenderWindowInteractor::Enable() {
   if (Enabled)
     return;
   Enabled = 1;
@@ -118,55 +112,41 @@ void wxVTKRenderWindowInteractor::Enable()
 }
 
 
-bool wxVTKRenderWindowInteractor::Enable(bool enable)
-{
+bool wxVTKRenderWindowInteractor::Enable(bool enable) {
   return wxWindow::Enable(enable);
 }
 
 
-void wxVTKRenderWindowInteractor::Disable()
-{
+void wxVTKRenderWindowInteractor::Disable() {
   if (!Enabled)
     return;
   Enabled = 0;
   Modified();
 }
 
-void wxVTKRenderWindowInteractor::Start()
-{
+void wxVTKRenderWindowInteractor::Start() {
   // the interactor cannot control the event loop
   vtkErrorMacro( << "wxVTKRenderWindowInteractor::Start() "
            "interactor cannot control event loop.");
 }
 
 
-void wxVTKRenderWindowInteractor::UpdateSize(int x, int y)
-{
-  if( RenderWindow )
-  {
-    if ( x != Size[0] || y != Size[1] )
-    {
+void wxVTKRenderWindowInteractor::UpdateSize(int x, int y) {
+  if( RenderWindow ) {
+    if ( x != Size[0] || y != Size[1] ) {
       Size[0] = x;
       Size[1] = y;
       RenderWindow->SetSize(x, y);
       this->Refresh();
-
     }
   }
 }
 
-int wxVTKRenderWindowInteractor::CreateTimer(int WXUNUSED(timertype))
-{
-
-  if (!timer.Start(10, TRUE))
-    return 0;
-
-  return 1;
-
+int wxVTKRenderWindowInteractor::CreateTimer(int WXUNUSED(timertype)) {
+  return timer.Start(10,TRUE)? 1 : 0;
 }
 
-int wxVTKRenderWindowInteractor::InternalCreateTimer(int timerId, int timerType, unsigned long duration)
-{
+int wxVTKRenderWindowInteractor::InternalCreateTimer(int timerId, int timerType, unsigned long duration) {
   if (!timer.Start(duration, timerType == OneShotTimer))
     return 0;
 
@@ -174,20 +154,17 @@ int wxVTKRenderWindowInteractor::InternalCreateTimer(int timerId, int timerType,
 }
 
 
-int wxVTKRenderWindowInteractor::InternalDestroyTimer(int platformTimerId)
-{
+int wxVTKRenderWindowInteractor::InternalDestroyTimer(int platformTimerId) {
   timer.Stop();
   return 1;
 }
 
-int wxVTKRenderWindowInteractor::DestroyTimer()
-{
+int wxVTKRenderWindowInteractor::DestroyTimer() {
   return 1;
 }
 
 
-void wxVTKRenderWindowInteractor::OnTimer(wxTimerEvent& WXUNUSED(event))
-{
+void wxVTKRenderWindowInteractor::OnTimer(wxTimerEvent& WXUNUSED(event)) {
   if (!Enabled)
     return;
 
@@ -196,22 +173,17 @@ void wxVTKRenderWindowInteractor::OnTimer(wxTimerEvent& WXUNUSED(event))
 
 }
 
-long wxVTKRenderWindowInteractor::GetHandleHack()
-{
-
+long wxVTKRenderWindowInteractor::GetHandleHack() {
   long handle_tmp = 0;
-  handle_tmp = (long)this->GetHandle();
+  handle_tmp = (long long)this->GetHandle();
   return handle_tmp;
 }
 
-
-void wxVTKRenderWindowInteractor::OnPaint(wxPaintEvent& WXUNUSED(event))
-{
+void wxVTKRenderWindowInteractor::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
   wxPaintDC pDC(this);
 
-  if(!Handle)
-  {
+  if(!Handle) {
     Handle = GetHandleHack();
     RenderWindow->SetWindowId(reinterpret_cast<void *>(Handle));
     RenderWindow->SetParentId(reinterpret_cast<void *>(this->GetParent()->GetHandle()));
@@ -220,129 +192,106 @@ void wxVTKRenderWindowInteractor::OnPaint(wxPaintEvent& WXUNUSED(event))
   Render();
 }
 
-void wxVTKRenderWindowInteractor::OnEraseBackground(wxEraseEvent &event)
-{
+void wxVTKRenderWindowInteractor::OnEraseBackground(wxEraseEvent &event) {
   event.Skip(false);
 }
 
-void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent& WXUNUSED(event))
-{
+void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent& WXUNUSED(event)) {
   int w, h;
   GetClientSize(&w, &h);
   UpdateSize(w, h);
 
-  if (!Enabled)
-  {
+  if (!Enabled){
     return;
   }
 
-
   InvokeEvent(vtkCommand::ConfigureEvent, NULL);
-
 }
 
-void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event)
-{
+void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event) {
   if (!Enabled) {return;}
 
-  SetEventInformationFromOrigin(event.GetX()-PrevX, event.GetY()-PrevY,
+  SetEventInformationCentralize(event.GetX()-PrevX, event.GetY()-PrevY,
       event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   InvokeEvent(vtkCommand::MouseMoveEvent, NULL);
-
 }
 
-void wxVTKRenderWindowInteractor::OnEnter(wxMouseEvent &event)
-{
-  if (!Enabled)
-  {
+void wxVTKRenderWindowInteractor::OnEnter(wxMouseEvent &event) {
+  if (!Enabled){
     return;
   }
   SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   InvokeEvent(vtkCommand::EnterEvent, NULL);
-
 }
 
-void wxVTKRenderWindowInteractor::OnLeave(wxMouseEvent &event)
-{
-  if (!Enabled)
-  {
+void wxVTKRenderWindowInteractor::OnLeave(wxMouseEvent &event) {
+  if (!Enabled) {
     return;
   }
   SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   InvokeEvent(vtkCommand::LeaveEvent, NULL);
-
 }
 
-void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event)
-{
-  if (!Enabled)
-  {
+void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event) {
+  if (!Enabled) {
     return;
   }
   int keycode = event.GetKeyCode();
   char key = '\0';
-  if (((unsigned int)keycode) < 256)
-  {
+  if (((unsigned int)keycode) < 256) {
     key = (char)keycode;
   }
   wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(mousePos.x, mousePos.y, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::KeyPressEvent, NULL);
   event.Skip();
 }
 
 void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
 {
-  if (!Enabled)
-  {
+  if (!Enabled) {
     return;
   }
 
   int keycode = event.GetKeyCode();
   char key = '\0';
-  if (((unsigned int)keycode) < 256)
-  {
+  if (((unsigned int)keycode) < 256) {
     key = (char)keycode;
   }
 
   wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(mousePos.x, mousePos.y, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::KeyReleaseEvent, NULL);
   event.Skip();
 }
 
 
-void wxVTKRenderWindowInteractor::OnChar(wxKeyEvent &event)
-{
-  if (!Enabled)
-  {
+void wxVTKRenderWindowInteractor::OnChar(wxKeyEvent &event) {
+  if (!Enabled) {
     return;
   }
 
   int keycode = event.GetKeyCode();
   char key = '\0';
 
-  if (((unsigned int)keycode) < 256)
-  {
+  if (((unsigned int)keycode) < 256) {
     key = (char)keycode;
   }
 
   wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(mousePos.x, mousePos.y, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::CharEvent, NULL);
   event.Skip();
 }
 
-void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
-{
-  if (!Enabled || (ActiveButton != wxEVT_NULL))
-  {
+void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event) {
+  if (!Enabled || (ActiveButton != wxEVT_NULL)) {
     return;
   }
   ActiveButton = event.GetEventType();
   this->SetFocus();
 
-  SetEventInformationFromOrigin(0,0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   PrevX = event.GetX();
   PrevY = event.GetY();
 
@@ -364,20 +313,18 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   }
 }
 
-void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
-{
+void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event) {
 
-  if (!Enabled || (ActiveButton != (event.GetEventType()-1)))
-  {
+  if (!Enabled || (ActiveButton != (event.GetEventType()-1))) {
     return;
   }
 
   this->SetFocus();
 
-  SetEventInformationFromOrigin(0,0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   PrevX = 0;
   PrevY = 0;
-
+  
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
     InvokeEvent(vtkCommand::RightButtonReleaseEvent, NULL);
@@ -400,10 +347,9 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
 }
 
 
-void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event)
-{
+void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event) {
 
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   if(event.GetWheelRotation() > 0)
   {
     InvokeEvent(vtkCommand::MouseWheelForwardEvent, NULL);
@@ -416,8 +362,7 @@ void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event)
 }
 
 
-void wxVTKRenderWindowInteractor::Render()
-{
+void wxVTKRenderWindowInteractor::Render() {
   int renderAllowed = 1;
   if (renderAllowed && !RenderWhenDisabled)
   {
@@ -444,13 +389,11 @@ void wxVTKRenderWindowInteractor::Render()
   }
 }
 
-void wxVTKRenderWindowInteractor::SetRenderWhenDisabled(int newValue)
-{
+void wxVTKRenderWindowInteractor::SetRenderWhenDisabled(int newValue) {
   RenderWhenDisabled = (bool)newValue;
 }
 
-void wxVTKRenderWindowInteractor::SetStereo(int capable)
-{
+void wxVTKRenderWindowInteractor::SetStereo(int capable) {
   if (Stereo != capable)
   {
     Stereo = capable;
@@ -460,7 +403,6 @@ void wxVTKRenderWindowInteractor::SetStereo(int capable)
   }
 }
 
-void wxVTKRenderWindowInteractor::PrintSelf(ostream& os, vtkIndent indent)
-{
+void wxVTKRenderWindowInteractor::PrintSelf(ostream& os, vtkIndent indent) {
   this->Superclass::PrintSelf(os, indent);
 }
