@@ -42,8 +42,8 @@ BEGIN_EVENT_TABLE(wxVTKRenderWindowInteractor, wxWindow)
   EVT_LEFT_UP(wxVTKRenderWindowInteractor::OnButtonUp)
   EVT_MIDDLE_UP(wxVTKRenderWindowInteractor::OnButtonUp)
   EVT_RIGHT_UP(wxVTKRenderWindowInteractor::OnButtonUp)
-  EVT_ENTER_WINDOW(wxVTKRenderWindowInteractor::OnEnter)
-  EVT_LEAVE_WINDOW(wxVTKRenderWindowInteractor::OnLeave)
+  EVT_ENTER_WINDOW(wxVTKRenderWindowInteractor::OnMotion)
+  EVT_LEAVE_WINDOW(wxVTKRenderWindowInteractor::OnMotion)
   EVT_MOUSEWHEEL(wxVTKRenderWindowInteractor::OnMouseWheel)
   EVT_KEY_DOWN(wxVTKRenderWindowInteractor::OnKeyDown)
   EVT_KEY_UP(wxVTKRenderWindowInteractor::OnKeyUp)
@@ -54,6 +54,7 @@ END_EVENT_TABLE()
 
 wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor() : wxWindow(), vtkRenderWindowInteractor()
 {
+  // TODO: Avoid redundant constructor
   this->SetInteractorStyle(vtkInteractorStyleTrackballCamera::New());
   this->RenderWindow = NULL;
   this->SetRenderWindow(vtkRenderWindow::New());
@@ -210,41 +211,18 @@ void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent& WXUNUSED(event)) {
 
 void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event) {
   if (!Enabled) {return;}
-
-  SetEventInformationCentralize(event.GetX()-PrevX, event.GetY()-PrevY,
-      event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  SetEventInformationFlipY(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   InvokeEvent(vtkCommand::MouseMoveEvent, NULL);
 }
 
-void wxVTKRenderWindowInteractor::OnEnter(wxMouseEvent &event) {
-  if (!Enabled){
-    return;
-  }
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-  InvokeEvent(vtkCommand::EnterEvent, NULL);
-}
-
-void wxVTKRenderWindowInteractor::OnLeave(wxMouseEvent &event) {
-  if (!Enabled) {
-    return;
-  }
-  SetEventInformationCentralize(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-  InvokeEvent(vtkCommand::LeaveEvent, NULL);
-}
-
 void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event) {
+  /* This event causes issues when panning in the render window. The event needs to be skipped
+  while manipulating the render window, for example while panning or rotating. */
   if (!Enabled) {
     return;
   }
-  int keycode = event.GetKeyCode();
-  char key = '\0';
-  if (((unsigned int)keycode) < 256) {
-    key = (char)keycode;
-  }
-  wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
-  InvokeEvent(vtkCommand::KeyPressEvent, NULL);
   event.Skip();
+  //InvokeEvent(vtkCommand::KeyPressEvent, NULL);
 }
 
 void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
@@ -252,36 +230,13 @@ void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
   if (!Enabled) {
     return;
   }
-
-  int keycode = event.GetKeyCode();
-  char key = '\0';
-  if (((unsigned int)keycode) < 256) {
-    key = (char)keycode;
-  }
-
-  wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
-  InvokeEvent(vtkCommand::KeyReleaseEvent, NULL);
   event.Skip();
+  //InvokeEvent(vtkCommand::KeyReleaseEvent, NULL);
 }
 
 
 void wxVTKRenderWindowInteractor::OnChar(wxKeyEvent &event) {
-  if (!Enabled) {
-    return;
-  }
-
-  int keycode = event.GetKeyCode();
-  char key = '\0';
-
-  if (((unsigned int)keycode) < 256) {
-    key = (char)keycode;
-  }
-
-  wxPoint mousePos = ScreenToClient(wxGetMousePosition());
-  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::CharEvent, NULL);
-  event.Skip();
 }
 
 void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event) {
@@ -291,24 +246,18 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event) {
   ActiveButton = event.GetEventType();
   this->SetFocus();
 
-  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-  PrevX = event.GetX();
-  PrevY = event.GetY();
+  SetEventInformationFlipY(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 
-  if(event.RightDown())
-  {
+  if(event.RightDown()) {
     InvokeEvent(vtkCommand::RightButtonPressEvent, NULL);
   }
-  else if(event.LeftDown())
-  {
+  else if(event.LeftDown()) {
     InvokeEvent(vtkCommand::LeftButtonPressEvent, NULL);
   }
-  else if(event.MiddleDown())
-  {
+  else if(event.MiddleDown()) {
     InvokeEvent(vtkCommand::MiddleButtonPressEvent, NULL);
   }
-  if ((ActiveButton != wxEVT_NULL) && WX_USE_X_CAPTURE && UseCaptureMouse)
-  {
+  if ((ActiveButton != wxEVT_NULL) && WX_USE_X_CAPTURE && UseCaptureMouse) {
     CaptureMouse();
   }
 }
@@ -321,9 +270,8 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event) {
 
   this->SetFocus();
 
-  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-  PrevX = 0;
-  PrevY = 0;
+  SetEventInformationFlipY(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+
   
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
@@ -349,7 +297,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event) {
 
 void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event) {
 
-  SetEventInformationCentralize(0, 0, event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+    SetEventInformationFlipY(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
   if(event.GetWheelRotation() > 0)
   {
     InvokeEvent(vtkCommand::MouseWheelForwardEvent, NULL);
