@@ -227,9 +227,7 @@ void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event) {
 
 void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
 {
-  if (!Enabled) {
-    return;
-  }
+  if (!Enabled) {return;}
   event.Skip();
   //InvokeEvent(vtkCommand::KeyReleaseEvent, NULL);
 }
@@ -264,14 +262,12 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event) {
 
 void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event) {
 
-  if (!Enabled || (ActiveButton != (event.GetEventType()-1))) {
+  if (!Enabled) {
     return;
   }
 
   this->SetFocus();
-
   SetEventInformationFlipY(event.GetX(), event.GetY(), event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-
   
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
